@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { corsPreflight, jsonWithCors } from '@/lib/cors';
+import { Resend } from "resend";
 
 const MPESA_API_URL = process.env.MPESA_API_URL as string;
 const MPESA_API_KEY = process.env.MPESA_API_KEY as string;
@@ -15,6 +16,8 @@ export async function POST(req: NextRequest) {
     phone?: string;
     amount?: number;
     reference?: string;
+	email?: string;
+	name?: string;
   };
   try {
     body = await req.json();
@@ -70,19 +73,19 @@ console.error('[payments/mpesa] validação falhou:', {
     // formato { success, error } que o cliente (useSubscription) espera.
     const isSuccess = data.status === 'sucesso' || data.statusCode === 200;
 
-	if (isSuccess && email && RESEND_API_KEY) {
+	if (isSuccess && body.email && RESEND_API_KEY) {
             const resend = new Resend(RESEND_API_KEY);
 
             await resend.emails.send({
                 from:
                     "CarroNaMão <noreply@ndlovutechsolutions.com>",
-                to: email,
+                to: body.email,
                 subject: "✅ Pagamento confirmado — CarroNaMão",
                 html: emailTemplate({
-                    nome: nome ?? "Cliente",
-                    valor,
-                    reference,
-                    numero,
+                    nome: body.name ?? "Cliente",
+                    valor: body.amount,
+                    reference: body.reference,
+                    numero: body.phone,
                 }),
             });
         }
