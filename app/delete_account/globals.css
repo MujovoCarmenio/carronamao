@@ -1,0 +1,45 @@
+:root {
+  --asphalt: #1c1f26;
+  --asphalt-soft: #2a2e38;
+  --steel: #6b7280;
+  --steel-light: #9ca3af;
+  --amber: #f2a93b;
+  --amber-dark: #c9891f;
+  --danger: #c2483d;
+  --danger-dark: #a13a30;
+  --paper: #f7f6f3;
+  --hairline: #e2e0da;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  background: var(--paper);
+  color: var(--asphalt);
+  font-family: var(--font-body), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display), sans-serif;
+  margin: 0;
+}
+
+button {
+  font-family: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

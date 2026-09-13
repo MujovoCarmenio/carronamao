@@ -1,8 +1,8 @@
 {
-  "name": "ndlovu-api",
+  "name": "carronamao-page",
   "version": "1.0.0",
   "private": true,
-  "description": "APIs da Ndlovu Tech Solutions, organizadas por app (ex: /carronamao/api/*), servidas em ndlovutechsolutions.com",
+  "description": "CarroNaMao web page, hospedada em ndlovutechsolutions.com",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
