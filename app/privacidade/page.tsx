@@ -177,7 +177,7 @@ export default function PrivacyPage() {
 
           <h1>Política de Privacidade</h1>
           <p className="updated">
-            Última atualização: <strong>13 de Setembro de 2026</strong> · Versão 1.0
+            Última atualização: <strong>Setembro de 2026</strong>
           </p>
 
           <p>

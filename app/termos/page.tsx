@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 export default function TermosCarroNaMao() {
   return (
     <div className="cnm-page">
-      <header className="cnm-header">
+      <header>
         <div className="logo-badge">
           <img
             src="https://tdtudeklstqvpkspvrci.supabase.co/storage/v1/object/public/carronamao/icon-192.png"
@@ -36,7 +36,7 @@ export default function TermosCarroNaMao() {
           &ldquo;Aplicação&rdquo; refere-se ao CarroNaMão, disponível para
           Android e iOS. &ldquo;Utilizador&rdquo; é qualquer pessoa que crie
           uma conta na aplicação. &ldquo;Anúncio&rdquo; é qualquer publicação
-          de um veículo criada por um utilizador para venda ou aluguer.
+          de um veículo criada por um utilizador.
         </p>
 
         <h2>2. Conta e elegibilidade</h2>
