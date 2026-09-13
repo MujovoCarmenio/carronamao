@@ -1,28 +1,27 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Termos e Condições — CarroNaMão",
   description:
-    "Termos e condições de utilização da aplicação CarroNaMão, incluindo subscrições, pagamentos via M-Pesa e responsabilidades dos utilizadores.",
+    "Termos e condições de utilização da aplicação CarroNaMão e responsabilidades dos utilizadores.",
 };
 
 export default function TermosCarroNaMao() {
   return (
     <div className="cnm-page">
       <header className="cnm-header">
-        <div className="cnm-header__inner">
-          <span className="cnm-brand">
-            Carro<em>NaMão</em>
-          </span>
+        <div className="logo-badge">
+          <img
+            src="https://tdtudeklstqvpkspvrci.supabase.co/storage/v1/object/public/carronamao/icon-192.png"
+            alt="CarroNaMão Logo"
+            width="40"
+            // style="display: block; border: 0"
+          />
         </div>
+        <div className="brand">Carro<span>NaMão</span></div>
       </header>
 
       <main className="cnm-content">
-        <Link href="/" className="cnm-back">
-          ← Ndlovu Digital
-        </Link>
-
         <h1>Termos e Condições</h1>
         <span className="cnm-updated">Última actualização: Agosto de 2026</span>
 

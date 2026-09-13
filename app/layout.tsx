@@ -24,9 +24,9 @@ const plexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Ndlovu Digital — Infra-estrutura digital para Moçambique",
+  title: "Ndlovu Tech Solutions — Infra-estrutura digital para Moçambique",
   description:
-    "Aplicações móveis, APIs e integrações de pagamento construídas para o mercado moçambicano. Criadores do CarroNaMão.",
+    "Aplicações móveis, APIs construídas para o mercado moçambicano. Criadores do CarroNaMão.",
   metadataBase: new URL("https://ndlovutechsolutions.com"),
 };
 
