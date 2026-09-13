@@ -2,11 +2,11 @@
 import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = process.env.SUPABASE_URL;
-const roleKey = process.env.SUPABASE_ROLE_KEY;
+const roleKey = process.env.SUPABASE_PUBLISHABLE_KEY;
 
 if (!supabaseUrl || !roleKey) {
   throw new Error(
-    "NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_ANON_KEY são obrigatórias.",
+    "SUPABASE_URL e SUPABASE_PUBLISHABLE_KEY são obrigatórias.",
   );
 }
 
