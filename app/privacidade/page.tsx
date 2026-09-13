@@ -169,7 +169,7 @@ export default function PrivacyPage() {
                 src="https://tdtudeklstqvpkspvrci.supabase.co/storage/v1/object/public/carronamao/icon-192.png"
                 alt="CarroNaMão Logo"
                 width="40"
-                // style="display: block; border: 0"
+                className="display: block; border: 0"
               />
             </div>
             <div className="brand">Carro<span>NaMão</span></div>
