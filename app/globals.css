@@ -636,3 +636,9 @@ p {
   font-size: 18px;
   flex-shrink: 0;
 }
+.brand {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+}
+

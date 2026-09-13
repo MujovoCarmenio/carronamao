@@ -22,7 +22,7 @@ export default function PrivacyPage() {
 
       <style>{`
         .privacy-page {
-          --bg: #0A0E14;
+          --bg: #101622;
           --surface: #101622;
           --surface-2: #17202F;
           --accent: #1152D4;
@@ -381,8 +381,8 @@ export default function PrivacyPage() {
           <footer>
             CarroNaMão — Ndlovu Tech Solutions · Este documento está
             disponível em{" "}
-            <a href="https://ndlovutechsolutions.com/carronamao/privacidade">
-              ndlovutechsolutions.com/carronamao/privacidade
+            <a href="https://carronamao.ndlovutechsolutions.com/privacidade">
+              carronamao.ndlovutechsolutions.com/privacidade
             </a>
           </footer>
         </div>
