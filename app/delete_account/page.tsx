@@ -315,6 +315,7 @@ function StepItem({
 const styles: Record<string, React.CSSProperties> = {
   page: {
     minHeight: "100vh",
+    background: "#101622"
   },
   header: {
     background: "var(--asphalt)",
