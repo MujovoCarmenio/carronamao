@@ -35,7 +35,7 @@ export default function DeleteAccountPage() {
         body: JSON.stringify({ email: email.trim().toLowerCase() }),
       });
 
-      if (!res.ok) throw new Error("Falha ao enviar o pedido.");
+      if (!res.ok) throw new Error(res.statusText);
 
       setStep("otp");
     } catch (err) {
