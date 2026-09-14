@@ -1,0 +1,937 @@
+:root {
+  --delete-bg: #101622;
+  --delete-surface: #17202f;
+  --delete-surface-2: #172540;
+
+  --delete-blue: #1152d4;
+  --delete-blue-light: #3b82f6;
+
+  --delete-danger: #ef4444;
+  --delete-success: #22c55e;
+
+  --delete-text: #f5f7fa;
+  --delete-text-2: #a9b2c3;
+  --delete-text-3: #6b7488;
+
+  --delete-border: rgba(255, 255, 255, 0.09);
+}
+
+
+/* =====================================================
+   PAGE
+===================================================== */
+
+.delete-page {
+  min-height: 100vh;
+
+  background:
+    radial-gradient(
+      circle at 50% -10%,
+      rgba(17, 82, 212, 0.12),
+      transparent 40%
+    ),
+    var(--delete-bg);
+
+  color: var(--delete-text);
+
+  font-family:
+    var(--font-space-grotesk),
+    var(--font-inter),
+    var(--font-jetbrains),
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}
+
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+.delete-header {
+  width: 100%;
+
+  background: rgba(23, 32, 47, 0.88);
+
+  border-bottom:
+    1px solid var(--delete-border);
+
+  backdrop-filter: blur(14px);
+}
+
+
+.delete-header-inner {
+  width: 100%;
+  max-width: 760px;
+
+  margin: 0 auto;
+
+  padding:
+    19px 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+
+.delete-brand {
+  font-family:
+    var(--font-space-grotesk),
+    var(--font-inter),
+    sans-serif;
+
+  font-size: 20px;
+  font-weight: 700;
+
+  letter-spacing: -0.4px;
+
+  color: white;
+}
+
+
+.delete-brand span {
+  color: var(--delete-blue-light);
+}
+
+
+.delete-header-label {
+  color: var(--delete-text-3);
+
+  font-size: 13px;
+}
+
+
+/* =====================================================
+   CONTAINER
+===================================================== */
+
+.delete-container {
+  width: 100%;
+  max-width: 700px;
+
+  margin: 0 auto;
+
+  padding:
+    55px 24px 80px;
+}
+
+
+/* =====================================================
+   TITLE
+===================================================== */
+
+.delete-title {
+  margin: 0;
+
+  font-family:
+    var(--font-space-grotesk),
+    var(--font-inter),
+    sans-serif;
+
+  font-size: 34px;
+  line-height: 1.15;
+
+  letter-spacing: -0.8px;
+}
+
+
+.delete-subtitle {
+  max-width: 590px;
+
+  margin:
+    13px 0 0;
+
+  color: var(--delete-text-2);
+
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+
+/* =====================================================
+   WARNING
+===================================================== */
+
+.delete-warning {
+  margin-top: 28px;
+
+  padding:
+    18px 20px;
+
+  background:
+    rgba(239, 68, 68, 0.07);
+
+  border:
+    1px solid rgba(239, 68, 68, 0.28);
+
+  border-radius: 14px;
+}
+
+
+.delete-warning-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  margin-bottom: 8px;
+
+  color: var(--delete-danger);
+
+  font-size: 14px;
+  font-weight: 700;
+}
+
+
+.delete-warning p {
+  margin: 0;
+
+  color: var(--delete-text-2);
+
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+
+/* =====================================================
+   ALERTS
+===================================================== */
+
+.delete-alert {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  margin-top: 18px;
+
+  padding:
+    13px 15px;
+
+  border-radius: 11px;
+
+  font-size: 13px;
+}
+
+
+.delete-alert-error {
+  color: #fecaca;
+
+  background:
+    rgba(239, 68, 68, 0.08);
+
+  border:
+    1px solid rgba(239, 68, 68, 0.25);
+}
+
+
+.delete-alert-success {
+  color: #bbf7d0;
+
+  background:
+    rgba(34, 197, 94, 0.08);
+
+  border:
+    1px solid rgba(34, 197, 94, 0.25);
+}
+
+
+/* =====================================================
+   STEPS
+===================================================== */
+
+.delete-steps {
+  list-style: none;
+
+  margin:
+    43px 0 0;
+
+  padding: 0;
+}
+
+
+.delete-step {
+  position: relative;
+
+  margin-left: 15px;
+
+  padding:
+    0 0 42px 43px;
+
+  border-left:
+    2px solid var(--delete-border);
+}
+
+
+.delete-step:last-child {
+  padding-bottom: 0;
+}
+
+
+.delete-step.active {
+  border-left-color:
+    var(--delete-blue-light);
+}
+
+
+.delete-step.completed {
+  border-left-color:
+    var(--delete-success);
+}
+
+
+/* =====================================================
+   NUMBER
+===================================================== */
+
+.delete-step-number {
+  position: absolute;
+
+  left: -17px;
+  top: -2px;
+
+  width: 31px;
+  height: 31px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background:
+    var(--delete-bg);
+
+  border:
+    1px solid var(--delete-border);
+
+  color:
+    var(--delete-text-3);
+
+  font-size: 12px;
+  font-weight: 700;
+
+  transition:
+    all 0.25s ease;
+}
+
+
+.delete-step.active
+.delete-step-number {
+  background:
+    var(--delete-blue);
+
+  border-color:
+    var(--delete-blue-light);
+
+  color: white;
+
+  box-shadow:
+    0 0 0 5px rgba(59, 130, 246, 0.10);
+}
+
+
+.delete-step.completed
+.delete-step-number {
+  background:
+    var(--delete-success);
+
+  border-color:
+    var(--delete-success);
+
+  color: white;
+}
+
+
+/* =====================================================
+   STEP HEADER
+===================================================== */
+
+.delete-step-header {
+  min-height: 31px;
+
+  display: flex;
+  align-items: center;
+}
+
+
+.delete-step-header h2 {
+  margin: 0;
+
+  font-family:
+    "Space Grotesk",
+    Inter,
+    sans-serif;
+
+  color: var(--delete-text-3);
+
+  font-size: 16px;
+  font-weight: 600;
+}
+
+
+.delete-step.active
+.delete-step-header h2,
+.delete-step.completed
+.delete-step-header h2 {
+  color: var(--delete-text);
+}
+
+
+/* =====================================================
+   STEP CONTENT
+===================================================== */
+
+.delete-step-content {
+  max-width: 460px;
+
+  margin-top: 19px;
+}
+
+
+.delete-step-description {
+  margin:
+    0 0 16px;
+
+  color:
+    var(--delete-text-2);
+
+  font-size: 13px;
+
+  line-height: 1.65;
+}
+
+
+/* =====================================================
+   FORM
+===================================================== */
+
+.delete-form {
+  width: 100%;
+}
+
+
+.delete-form label:not(.delete-checkbox) {
+  display: block;
+
+  margin-bottom: 8px;
+
+  color:
+    var(--delete-text-2);
+
+  font-size: 11px;
+
+  font-weight: 700;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.7px;
+}
+
+
+.delete-form input[type="email"],
+.delete-form input[type="text"] {
+  width: 100%;
+
+  height: 49px;
+
+  padding:
+    0 15px;
+
+  border:
+    1px solid var(--delete-border);
+
+  border-radius: 11px;
+
+  outline: none;
+
+  background:
+    var(--delete-surface);
+
+  color:
+    var(--delete-text);
+
+  font-family: var(--font-inter), sans-serif;
+
+  font-size: 14px;
+
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+
+.delete-form input::placeholder {
+  color:
+    var(--delete-text-3);
+}
+
+
+.delete-form input:focus {
+  border-color:
+    var(--delete-blue-light);
+
+  box-shadow:
+    0 0 0 3px rgba(59, 130, 246, 0.10);
+}
+
+
+.delete-form input:disabled {
+  opacity: 0.65;
+
+  cursor: not-allowed;
+}
+
+
+/* =====================================================
+   PRIMARY BUTTON
+===================================================== */
+
+.delete-primary-button,
+.delete-danger-button {
+  width: 100%;
+
+  height: 49px;
+
+  margin-top: 14px;
+
+  border: none;
+
+  border-radius: 11px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 9px;
+
+  font-size: 14px;
+
+  font-weight: 700;
+
+  color: white;
+
+  transition:
+    transform 0.18s,
+    filter 0.18s,
+    opacity 0.18s;
+}
+
+
+.delete-primary-button {
+  background:
+    var(--delete-blue);
+}
+
+
+.delete-primary-button:hover:not(:disabled) {
+  background:
+    var(--delete-blue-light);
+
+  transform:
+    translateY(-1px);
+}
+
+
+.delete-danger-button {
+  background:
+    var(--delete-danger);
+}
+
+
+.delete-danger-button:hover:not(:disabled) {
+  filter:
+    brightness(1.08);
+
+  transform:
+    translateY(-1px);
+}
+
+
+.delete-primary-button:disabled,
+.delete-danger-button:disabled {
+  opacity: 0.45;
+
+  cursor: not-allowed;
+
+  transform: none;
+}
+
+
+/* =====================================================
+   EMAIL DISPLAY
+===================================================== */
+
+.delete-email-display {
+  margin:
+    0 0 18px;
+
+  padding:
+    12px 14px;
+
+  border-radius: 10px;
+
+  background:
+    rgba(59, 130, 246, 0.07);
+
+  border:
+    1px solid rgba(59, 130, 246, 0.17);
+
+  color:
+    var(--delete-blue-light);
+
+  font-size: 13px;
+
+  word-break: break-all;
+}
+
+
+/* =====================================================
+   OTP
+===================================================== */
+
+.delete-otp-input {
+  font-family:
+    "JetBrains Mono",
+    "Courier New",
+    monospace !important;
+
+  font-size: 23px !important;
+
+  font-weight: 700;
+
+  letter-spacing: 8px;
+
+  text-align: center;
+
+  padding-left: 20px !important;
+}
+
+
+.delete-otp-hint {
+  margin-top: 9px;
+
+  color:
+    var(--delete-text-3);
+
+  font-size: 12px;
+}
+
+
+.delete-resend-button {
+  margin-top: 13px;
+
+  padding: 0;
+
+  border: none;
+
+  background: transparent;
+
+  color:
+    var(--delete-blue-light);
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+
+.delete-resend-button:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
+
+.delete-resend-button:disabled {
+  color:
+    var(--delete-text-3);
+
+  cursor: not-allowed;
+}
+
+
+/* =====================================================
+   CONFIRM BOX
+===================================================== */
+
+.delete-confirm-box {
+  margin-top: 20px;
+
+  padding:
+    15px;
+
+  background:
+    var(--delete-surface);
+
+  border:
+    1px solid var(--delete-border);
+
+  border-radius: 11px;
+}
+
+
+.delete-checkbox {
+  display: flex;
+
+  align-items: flex-start;
+
+  gap: 10px;
+
+  color:
+    var(--delete-text-2);
+
+  font-size: 12px;
+
+  line-height: 1.6;
+
+  cursor: pointer;
+}
+
+
+.delete-checkbox input {
+  width: 16px;
+  height: 16px;
+
+  flex: 0 0 auto;
+
+  margin-top: 2px;
+
+  accent-color:
+    var(--delete-danger);
+}
+
+
+.delete-checkbox strong {
+  color:
+    var(--delete-text);
+}
+
+
+/* =====================================================
+   SUCCESS
+===================================================== */
+
+.delete-success {
+  display: flex;
+
+  gap: 15px;
+
+  padding:
+    20px;
+
+  border-radius: 13px;
+
+  background:
+    rgba(34, 197, 94, 0.08);
+
+  border:
+    1px solid rgba(34, 197, 94, 0.25);
+}
+
+
+.delete-success-icon {
+  width: 43px;
+  height: 43px;
+
+  flex: 0 0 auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background:
+    rgba(34, 197, 94, 0.15);
+
+  color:
+    var(--delete-success);
+
+  font-size: 20px;
+
+  font-weight: 700;
+}
+
+
+.delete-success h3 {
+  margin:
+    1px 0 6px;
+
+  font-family:
+    "Space Grotesk",
+    Inter,
+    sans-serif;
+
+  font-size: 16px;
+}
+
+
+.delete-success p {
+  margin: 0;
+
+  color:
+    var(--delete-text-2);
+
+  font-size: 12px;
+
+  line-height: 1.6;
+}
+
+
+/* =====================================================
+   SPINNER
+===================================================== */
+
+.spinner {
+  width: 15px;
+  height: 15px;
+
+  border:
+    2px solid rgba(255,255,255,0.35);
+
+  border-top-color:
+    white;
+
+  border-radius: 50%;
+
+  animation:
+    delete-spin 0.7s linear infinite;
+}
+
+
+@keyframes delete-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* =====================================================
+   DATA
+===================================================== */
+
+.delete-data {
+  margin-top: 55px;
+
+  padding-top: 29px;
+
+  border-top:
+    1px solid var(--delete-border);
+}
+
+
+.delete-data h2 {
+  margin: 0;
+
+  font-family:
+    "Space Grotesk",
+    Inter,
+    sans-serif;
+
+  font-size: 18px;
+}
+
+
+.delete-data ul {
+  margin:
+    15px 0 0;
+
+  padding-left: 21px;
+
+  color:
+    var(--delete-text-2);
+
+  font-size: 13px;
+
+  line-height: 1.9;
+}
+
+
+.delete-retention {
+  margin-top: 18px;
+
+  color:
+    var(--delete-text-3);
+
+  font-size: 11px;
+
+  line-height: 1.7;
+}
+
+
+.delete-retention a {
+  color:
+    var(--delete-blue-light);
+
+  text-decoration: none;
+}
+
+
+.delete-retention a:hover {
+  text-decoration: underline;
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 600px) {
+
+  .delete-header-inner {
+    padding:
+      17px 18px;
+  }
+
+
+  .delete-header-label {
+    display: none;
+  }
+
+
+  .delete-container {
+    padding:
+      38px 18px 60px;
+  }
+
+
+  .delete-title {
+    font-size: 28px;
+  }
+
+
+  .delete-subtitle {
+    font-size: 14px;
+  }
+
+
+  .delete-warning {
+    padding:
+      16px;
+  }
+
+
+  .delete-step {
+    padding-left: 35px;
+  }
+
+
+  .delete-step-content {
+    max-width: none;
+  }
+
+
+  .delete-otp-input {
+    font-size: 21px !important;
+
+    letter-spacing: 6px;
+  }
+
+
+  .delete-success {
+    align-items: flex-start;
+  }
+
+}

@@ -98,17 +98,43 @@ export async function POST(req: NextRequest) {
       Date.now() + OTP_TTL_MINUTES * 60 * 1000,
     ).toISOString();
 
-    await supabaseAdmin.from("account_deletion_requests").insert({
-      email,
-      otp_code: code,
-      expires_at: expiresAt,
-    });
+    const { error: insertError } = await supabaseAdmin
+      .from("account_deletion_requests")
+      .insert({
+        email,
+        otp_code: code,
+        expires_at: expiresAt,
+      });
 
-    await sendEmail({
+    if (insertError) {
+      console.error(
+        "[account-deletion] erro ao guardar OTP:",
+        insertError
+      );
+
+      return jsonWithCors(
+        { error: "Não foi possível processar o pedido." },
+        { status: 500, origin }
+      );
+    }
+
+    const emailResult = await sendEmail({
       to: email,
       subject: "Confirma a eliminação da tua conta — CarroNaMão",
       html: buildEmailHtml(code),
     });
+
+    if (!emailResult.success) {
+      console.error(
+        "[account-deletion] Resend falhou:",
+        emailResult.error
+      );
+
+      return jsonWithCors(
+        { error: "Não foi possível enviar o código." },
+        { status: 500, origin }
+      );
+    }
   }
 
   return jsonWithCors(genericResponse, { status: 200, origin });

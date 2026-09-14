@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
+import { Space_Grotesk, IBM_Plex_Sans, IBM_Plex_Mono, JetBrains_Mono, Inter } from "next/font/google";
+// @ts-expect-error Next.js handles this global stylesheet import at build time.
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -7,6 +8,16 @@ const spaceGrotesk = Space_Grotesk({
   weight: ["500", "600", "700"],
   variable: "--font-display",
   display: "swap",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+});
+
+const jetBrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jetbrains",
 });
 
 const plexSans = IBM_Plex_Sans({
@@ -38,7 +49,7 @@ export default function RootLayout({
   return (
     <html lang="pt">
       <body
-        className={`${spaceGrotesk.variable} ${plexSans.variable} ${plexMono.variable}`}
+        className={`${spaceGrotesk.variable} ${plexSans.variable} ${plexMono.variable} ${jetBrainsMono.variable} ${inter.variable}`}
       >
         {children}
       </body>

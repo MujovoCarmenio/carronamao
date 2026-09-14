@@ -1,454 +1,669 @@
-// app/eliminar-conta/page.tsx
 "use client";
 
-import { useRef, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
+// @ts-expect-error Next.js handles this global stylesheet import at build time.
+import "./eliminar-conta.css";
 
-type Step = "email" | "otp" | "success";
+type Step = 1 | 2 | 3;
 
-export default function DeleteAccountPage() {
-  const [step, setStep] = useState<Step>("email");
+export default function EliminarContaPage() {
+  const [step, setStep] = useState<Step>(1);
+
   const [email, setEmail] = useState("");
-  const [code, setCode] = useState(["", "", "", "", "", ""]);
+  const [code, setCode] = useState("");
+
+  const [accepted, setAccepted] = useState(false);
+
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [confirmChecked, setConfirmChecked] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const [cooldown, setCooldown] = useState(0);
 
-  const handleRequestCode = async () => {
-    setError(null);
+  // --------------------------------------------------
+  // COOLDOWN
+  // --------------------------------------------------
 
-    if (!email.includes("@") || !email.includes(".")) {
-      setError("Escreve um email válido.");
-      return;
-    }
-    if (!confirmChecked) {
-      setError("Confirma que entendes que esta ação é permanente.");
-      return;
-    }
+  useEffect(() => {
+    if (cooldown <= 0) return;
 
-    setLoading(true);
-    try {
-      const res = await fetch("/api/account-deletion/request", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim().toLowerCase() }),
+    const timer = setInterval(() => {
+      setCooldown((current) => {
+        if (current <= 1) {
+          clearInterval(timer);
+          return 0;
+        }
+
+        return current - 1;
       });
+    }, 1000);
 
-      if (!res.ok) throw new Error(res.statusText);
+    return () => clearInterval(timer);
+  }, [cooldown]);
 
-      setStep("otp");
-    } catch (err) {
-      setError(`Não foi possível enviar o código. Tenta novamente. ${err instanceof Error ? err.message : ""}`);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // --------------------------------------------------
+  // HELPERS
+  // --------------------------------------------------
 
-  const handleCodeChange = (index: number, value: string) => {
-    if (!/^\d?$/.test(value)) return; // só dígitos, um por caixa
+  function clearMessages() {
+    setErrorMessage("");
+    setSuccessMessage("");
+  }
 
-    const next = [...code];
-    next[index] = value;
-    setCode(next);
+  // --------------------------------------------------
+  // REQUEST OTP
+  // --------------------------------------------------
 
-    if (value && index < 5) {
-      inputRefs.current[index + 1]?.focus();
-    }
-  };
+  async function requestOtp(event?: FormEvent) {
+    event?.preventDefault();
 
-  const handleCodeKeyDown = (
-    index: number,
-    e: React.KeyboardEvent<HTMLInputElement>,
-  ) => {
-    if (e.key === "Backspace" && !code[index] && index > 0) {
-      inputRefs.current[index - 1]?.focus();
-    }
-  };
+    clearMessages();
 
-  const handleConfirmDeletion = async () => {
-    setError(null);
-    const fullCode = code.join("");
+    const normalizedEmail = email.trim().toLowerCase();
 
-    if (fullCode.length !== 6) {
-      setError("Introduz o código de 6 dígitos.");
+    if (!normalizedEmail) {
+      setErrorMessage("Introduz o teu email.");
       return;
     }
 
-    setLoading(true);
+    if (!normalizedEmail.includes("@")) {
+      setErrorMessage("Introduz um email válido.");
+      return;
+    }
+
+    if (cooldown > 0) {
+      return;
+    }
+
     try {
-      const res = await fetch("/api/account-deletion/confirm", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim().toLowerCase(), code: fullCode }),
-      });
+      setLoading(true);
 
-      const data = await res.json();
+      const response = await fetch(
+        "/api/account-deletion/request",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: normalizedEmail,
+          }),
+        }
+      );
 
-      if (!res.ok) {
-        setError(data.error || "Código incorreto ou expirado.");
-        return;
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data?.error ||
+            "Não foi possível processar o pedido."
+        );
       }
 
-      setStep("success");
-    } catch (err) {
-      setError("Erro inesperado. Tenta novamente.");
+      setEmail(normalizedEmail);
+
+      setCooldown(45);
+
+      setStep(2);
+
+    } catch (error) {
+      console.error(
+        "[account deletion] request error:",
+        error
+      );
+
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Ocorreu um erro inesperado."
+      );
     } finally {
       setLoading(false);
     }
-  };
+  }
+
+  // --------------------------------------------------
+  // CONFIRM DELETE
+  // --------------------------------------------------
+
+  async function confirmDeletion(
+    event?: FormEvent
+  ) {
+    event?.preventDefault();
+
+    clearMessages();
+
+    if (!code || code.length !== 6) {
+      setErrorMessage(
+        "Introduz o código de 6 dígitos."
+      );
+      return;
+    }
+
+    if (!accepted) {
+      setErrorMessage(
+        "Confirma que compreendes que esta ação é permanente."
+      );
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const response = await fetch(
+        "/api/account-deletion/confirm",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email,
+            code,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data?.error ||
+            "Não foi possível eliminar a conta."
+        );
+      }
+
+      setSuccessMessage(
+        data?.message ||
+          "A tua conta foi eliminada com sucesso."
+      );
+
+      setStep(3);
+
+    } catch (error) {
+      console.error(
+        "[account deletion] confirm error:",
+        error
+      );
+
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Código inválido ou expirado."
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // --------------------------------------------------
+  // RESEND
+  // --------------------------------------------------
+
+  async function resendCode() {
+    if (cooldown > 0 || loading) {
+      return;
+    }
+
+    await requestOtp();
+  }
+
+  // --------------------------------------------------
+  // INPUT OTP
+  // --------------------------------------------------
+
+  function handleCodeChange(
+    value: string
+  ) {
+    const numericValue = value
+      .replace(/\D/g, "")
+      .slice(0, 6);
+
+    setCode(numericValue);
+  }
+
+  // --------------------------------------------------
+  // RENDER
+  // --------------------------------------------------
 
   return (
-    <>
-      <link rel="preconnect" href="https://fonts.googleapis.com" />
-      <link
-        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@600;700&display=swap"
-        rel="stylesheet"
-      />
+    <main className="delete-page">
 
-      <style>{`
-        .del-page {
-          --bg: #101622;
-          --surface: #17202F;
-          --surface-2: #172540;
-          --accent: #1152D4;
-          --accent-glow: #3b82f6;
-          --danger: #ef4444;
-          --success: #22c55e;
-          --text-1: #F5F7FA;
-          --text-2: #A9B2C3;
-          --text-3: #6B7488;
-          --border: rgba(255,255,255,0.09);
+      {/* HEADER */}
 
-          max-width: 520px;
-          margin: 0 auto;
-          padding: 56px 24px 100px;
-          background: var(--bg);
-          color: var(--text-1);
-          font-family: 'Inter', sans-serif;
-          line-height: 1.6;
-          min-height: 100vh;
-        }
+      <header className="delete-header">
 
-        .del-page header {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          margin-bottom: 32px;
-        }
+        <div className="delete-header-inner">
 
-        .del-page .brand {
-          font-family: 'Space Grotesk', sans-serif;
-          font-size: 17px;
-          font-weight: 700;
-        }
-        .del-page .brand span { color: var(--accent-glow); }
-
-        .del-page h1 {
-          font-family: 'Space Grotesk', sans-serif;
-          font-size: 26px;
-          font-weight: 700;
-          letter-spacing: -0.3px;
-          margin: 0 0 10px;
-        }
-
-        .del-page .subtitle {
-          font-size: 14px;
-          color: var(--text-2);
-          margin: 0 0 28px;
-        }
-
-        .del-page .warning-box {
-          background: rgba(239,68,68,0.08);
-          border: 1px solid rgba(239,68,68,0.3);
-          border-radius: 14px;
-          padding: 18px 20px;
-          margin-bottom: 28px;
-        }
-        .del-page .warning-box h3 {
-          color: var(--danger);
-          font-size: 14px;
-          font-weight: 700;
-          margin: 0 0 10px;
-        }
-        .del-page .warning-box ul {
-          margin: 0;
-          padding-left: 18px;
-        }
-        .del-page .warning-box li {
-          font-size: 13.5px;
-          color: var(--text-2);
-          margin-bottom: 6px;
-          line-height: 1.5;
-        }
-
-        .del-page label {
-          display: block;
-          font-size: 12px;
-          font-weight: 600;
-          color: var(--text-2);
-          text-transform: uppercase;
-          letter-spacing: 0.8px;
-          margin-bottom: 8px;
-        }
-
-        .del-page input[type="email"] {
-          width: 100%;
-          background: var(--surface);
-          border: 1.5px solid var(--border);
-          border-radius: 14px;
-          padding: 14px 16px;
-          font-size: 15px;
-          color: var(--text-1);
-          margin-bottom: 20px;
-          outline: none;
-          transition: border-color 0.2s ease;
-          font-family: inherit;
-        }
-        .del-page input[type="email"]:focus {
-          border-color: var(--accent-glow);
-        }
-
-        .del-page .checkbox-row {
-          display: flex;
-          align-items: flex-start;
-          gap: 10px;
-          margin-bottom: 24px;
-          cursor: pointer;
-        }
-        .del-page .checkbox-row input {
-          margin-top: 3px;
-          width: 16px;
-          height: 16px;
-          accent-color: var(--danger);
-          flex-shrink: 0;
-        }
-        .del-page .checkbox-row span {
-          font-size: 13.5px;
-          color: var(--text-2);
-          line-height: 1.5;
-        }
-
-        .del-page .otp-row {
-          display: flex;
-          gap: 8px;
-          margin-bottom: 24px;
-        }
-        .del-page .otp-box {
-          flex: 1;
-          height: 56px;
-          background: var(--surface);
-          border: 1.5px solid var(--border);
-          border-radius: 12px;
-          text-align: center;
-          font-size: 22px;
-          font-weight: 700;
-          font-family: 'JetBrains Mono', monospace;
-          color: var(--text-1);
-          outline: none;
-          transition: border-color 0.2s ease;
-        }
-        .del-page .otp-box:focus {
-          border-color: var(--accent-glow);
-        }
-
-        .del-page .btn {
-          width: 100%;
-          border: none;
-          border-radius: 14px;
-          padding: 15px;
-          font-size: 15px;
-          font-weight: 700;
-          cursor: pointer;
-          font-family: inherit;
-        }
-        .del-page .btn:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-        .del-page .btn-primary {
-          background: var(--accent);
-          color: #fff;
-        }
-        .del-page .btn-danger {
-          background: var(--danger);
-          color: #fff;
-        }
-        .del-page .btn-ghost {
-          background: transparent;
-          color: var(--text-2);
-          border: 1px solid var(--border);
-          margin-top: 10px;
-        }
-
-        .del-page .error-text {
-          color: var(--danger);
-          font-size: 13px;
-          margin: -10px 0 16px;
-        }
-
-        .del-page .resend-text {
-          text-align: center;
-          font-size: 13px;
-          color: var(--text-2);
-          margin-top: 16px;
-        }
-        .del-page .resend-text a {
-          color: var(--accent-glow);
-          font-weight: 600;
-          cursor: pointer;
-        }
-
-        .del-page .success-box {
-          text-align: center;
-          padding: 40px 20px;
-        }
-        .del-page .success-icon {
-          width: 64px; height: 64px;
-          border-radius: 50%;
-          background: rgba(34,197,94,0.12);
-          border: 1px solid rgba(34,197,94,0.3);
-          display: flex; align-items: center; justify-content: center;
-          margin: 0 auto 20px;
-          font-size: 28px;
-        }
-        .del-page .success-box h2 {
-          font-family: 'Space Grotesk', sans-serif;
-          font-size: 20px;
-          margin: 0 0 10px;
-        }
-        .del-page .success-box p {
-          font-size: 14px;
-          color: var(--text-2);
-          line-height: 1.6;
-        }
-      `}</style>
-
-      <div className="del-page">
-        <header>
-          <div className="brand">
+          <div className="delete-brand">
             Carro<span>NaMão</span>
           </div>
-        </header>
 
-        {step === "email" && (
-          <>
-            <h1>Eliminar conta</h1>
-            <p className="subtitle">
-              Solicita a eliminação permanente da tua conta CarroNaMão e de
-              todos os dados associados.
-            </p>
-
-            <div className="warning-box">
-              <h3>⚠️ Esta ação é irreversível</h3>
-              <ul>
-                <li>O teu perfil e dados de conta serão eliminados</li>
-                <li>Todos os anúncios de veículos que publicaste serão removidos</li>
-                <li>Fotografias e informações de subscrição serão apagadas</li>
-                <li>Não será possível recuperar estes dados depois de confirmares</li>
-              </ul>
-            </div>
-
-            <label htmlFor="email">Email da conta</label>
-            <input
-              id="email"
-              type="email"
-              placeholder="o-teu-email@exemplo.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              autoComplete="email"
-            />
-
-            <label className="checkbox-row">
-              <input
-                type="checkbox"
-                checked={confirmChecked}
-                onChange={(e) => setConfirmChecked(e.target.checked)}
-              />
-              <span>
-                Entendo que esta ação é permanente e que todos os meus dados
-                serão eliminados sem possibilidade de recuperação.
-              </span>
-            </label>
-
-            {error && <p className="error-text">{error}</p>}
-
-            <button
-              className="btn btn-danger"
-              onClick={handleRequestCode}
-              disabled={loading}
-            >
-              {loading ? "A enviar..." : "Enviar código de confirmação"}
-            </button>
-          </>
-        )}
-
-        {step === "otp" && (
-          <>
-            <h1>Confirma o código</h1>
-            <p className="subtitle">
-              Enviámos um código de 6 dígitos para <strong>{email}</strong>.
-              Introduz o código abaixo para confirmar a eliminação da conta.
-            </p>
-
-            <div className="otp-row">
-              {code.map((digit, i) => (
-                <input
-                  key={i}
-                  ref={(el) => {
-                    inputRefs.current[i] = el;
-                  }}
-                  className="otp-box"
-                  type="text"
-                  inputMode="numeric"
-                  maxLength={1}
-                  value={digit}
-                  onChange={(e) => handleCodeChange(i, e.target.value)}
-                  onKeyDown={(e) => handleCodeKeyDown(i, e)}
-                />
-              ))}
-            </div>
-
-            {error && <p className="error-text">{error}</p>}
-
-            <button
-              className="btn btn-danger"
-              onClick={handleConfirmDeletion}
-              disabled={loading}
-            >
-              {loading ? "A eliminar conta..." : "Confirmar e eliminar conta"}
-            </button>
-
-            <button
-              className="btn btn-ghost"
-              onClick={() => {
-                setStep("email");
-                setCode(["", "", "", "", "", ""]);
-                setError(null);
-              }}
-            >
-              Voltar
-            </button>
-
-            <p className="resend-text">
-              Não recebeste o código?{" "}
-              <a onClick={handleRequestCode}>Reenviar</a>
-            </p>
-          </>
-        )}
-
-        {step === "success" && (
-          <div className="success-box">
-            <div className="success-icon">✅</div>
-            <h2>Conta eliminada</h2>
-            <p>
-              A tua conta CarroNaMão e todos os dados associados foram
-              eliminados permanentemente. Obrigado por teres usado o
-              CarroNaMão.
-            </p>
+          <div className="delete-header-label">
+            Remoção de conta
           </div>
+
+        </div>
+
+      </header>
+
+
+      {/* CONTENT */}
+
+      <div className="delete-container">
+
+        <h1 className="delete-title">
+          Apagar a tua conta
+        </h1>
+
+        <p className="delete-subtitle">
+          Este processo remove permanentemente a tua
+          conta CarroNaMão e os dados associados.
+          Segue os passos abaixo para confirmar.
+        </p>
+
+
+        {/* WARNING */}
+
+        <div className="delete-warning">
+
+          <div className="delete-warning-title">
+            <span>⚠️</span>
+            Esta ação é permanente e irreversível
+          </div>
+
+          <p>
+            Depois de confirmares a eliminação, a tua
+            conta, anúncios e restantes dados associados
+            não poderão ser recuperados.
+          </p>
+
+        </div>
+
+
+        {/* ERROR */}
+
+        {errorMessage && (
+
+          <div
+            className="delete-alert delete-alert-error"
+            role="alert"
+          >
+            <span>⚠️</span>
+
+            <span>
+              {errorMessage}
+            </span>
+
+          </div>
+
         )}
+
+
+        {/* SUCCESS */}
+
+        {successMessage && step !== 3 && (
+
+          <div
+            className="delete-alert delete-alert-success"
+            role="status"
+          >
+            <span>✓</span>
+
+            <span>
+              {successMessage}
+            </span>
+
+          </div>
+
+        )}
+
+
+        {/* STEPS */}
+
+        <ol className="delete-steps">
+
+
+          {/* STEP 1 */}
+
+          <li
+            className={`
+              delete-step
+              ${step === 1 ? "active" : ""}
+              ${step > 1 ? "completed" : ""}
+            `}
+          >
+
+            <div className="delete-step-number">
+              {step > 1 ? "✓" : "1"}
+            </div>
+
+            <div className="delete-step-header">
+
+              <h2>
+                Introduz o teu email
+              </h2>
+
+            </div>
+
+
+            {step === 1 && (
+
+              <div className="delete-step-content">
+
+                <p className="delete-step-description">
+                  Introduz o endereço de email associado
+                  à tua conta CarroNaMão. Enviaremos um
+                  código de confirmação.
+                </p>
+
+
+                <form
+                  onSubmit={requestOtp}
+                  className="delete-form"
+                >
+
+                  <label htmlFor="email">
+                    Email da conta
+                  </label>
+
+                  <input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(event) =>
+                      setEmail(event.target.value)
+                    }
+                    placeholder="tuemail@exemplo.com"
+                    autoComplete="email"
+                    disabled={loading}
+                  />
+
+
+                  <button
+                    type="submit"
+                    className="delete-primary-button"
+                    disabled={loading}
+                  >
+
+                    {loading ? (
+                      <>
+                        <span className="spinner" />
+                        A enviar...
+                      </>
+                    ) : (
+                      <>
+                        Enviar código
+                        <span>→</span>
+                      </>
+                    )}
+
+                  </button>
+
+                </form>
+
+              </div>
+
+            )}
+
+          </li>
+
+
+          {/* STEP 2 */}
+
+          <li
+            className={`
+              delete-step
+              ${step === 2 ? "active" : ""}
+              ${step > 2 ? "completed" : ""}
+            `}
+          >
+
+            <div className="delete-step-number">
+              {step > 2 ? "✓" : "2"}
+            </div>
+
+
+            <div className="delete-step-header">
+
+              <h2>
+                Confirma o código enviado por email
+              </h2>
+
+            </div>
+
+
+            {step === 2 && (
+
+              <div className="delete-step-content">
+
+                <p className="delete-step-description">
+                  Enviámos um código de confirmação para:
+                </p>
+
+                <div className="delete-email-display">
+                  {email}
+                </div>
+
+
+                <form
+                  onSubmit={confirmDeletion}
+                  className="delete-form"
+                >
+
+                  <label htmlFor="code">
+                    Código de 6 dígitos
+                  </label>
+
+                  <input
+                    id="code"
+                    type="text"
+                    value={code}
+                    onChange={(event) =>
+                      handleCodeChange(
+                        event.target.value
+                      )
+                    }
+                    className="delete-otp-input"
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    maxLength={6}
+                    placeholder="000000"
+                    disabled={loading}
+                  />
+
+
+                  <div className="delete-otp-hint">
+                    O código expira em 15 minutos.
+                  </div>
+
+
+                  <button
+                    type="button"
+                    className="delete-resend-button"
+                    onClick={resendCode}
+                    disabled={
+                      cooldown > 0 || loading
+                    }
+                  >
+
+                    {cooldown > 0
+                      ? `Reenviar código (${cooldown}s)`
+                      : "Não recebeste? Reenviar código"
+                    }
+
+                  </button>
+
+
+                  {/* CONFIRMATION */}
+
+                  <div className="delete-confirm-box">
+
+                    <label className="delete-checkbox">
+
+                      <input
+                        type="checkbox"
+                        checked={accepted}
+                        onChange={(event) =>
+                          setAccepted(
+                            event.target.checked
+                          )
+                        }
+                        disabled={loading}
+                      />
+
+                      <span>
+                        Entendo que esta ação é{" "}
+                        <strong>
+                          permanente e irreversível
+                        </strong>
+                        . A minha conta, anúncios e
+                        restantes dados associados serão
+                        apagados.
+                      </span>
+
+                    </label>
+
+                  </div>
+
+
+                  <button
+                    type="submit"
+                    className="delete-danger-button"
+                    disabled={
+                      loading ||
+                      code.length !== 6 ||
+                      !accepted
+                    }
+                  >
+
+                    {loading ? (
+                      <>
+                        <span className="spinner" />
+                        A eliminar...
+                      </>
+                    ) : (
+                      <>
+                        Apagar a minha conta
+                        <span>→</span>
+                      </>
+                    )}
+
+                  </button>
+
+                </form>
+
+              </div>
+
+            )}
+
+          </li>
+
+
+          {/* STEP 3 */}
+
+          <li
+            className={`
+              delete-step
+              ${step === 3 ? "active completed" : ""}
+            `}
+          >
+
+            <div className="delete-step-number">
+              {step === 3 ? "✓" : "3"}
+            </div>
+
+
+            <div className="delete-step-header">
+
+              <h2>
+                Conta removida
+              </h2>
+
+            </div>
+
+
+            {step === 3 && (
+
+              <div className="delete-step-content">
+
+                <div className="delete-success">
+
+                  <div className="delete-success-icon">
+                    ✓
+                  </div>
+
+                  <div>
+
+                    <h3>
+                      Conta eliminada
+                    </h3>
+
+                    <p>
+                      A tua conta e os dados associados
+                      foram removidos com sucesso.
+                      Podes fechar esta página.
+                    </p>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            )}
+
+          </li>
+
+        </ol>
+
+
+        {/* DATA */}
+
+        <section className="delete-data">
+
+          <h2>
+            O que acontece aos teus dados
+          </h2>
+
+
+          <ul>
+
+            <li>
+              Perfil, email e número de telefone
+              associados à conta.
+            </li>
+
+            <li>
+              Anúncios de carros publicados por ti.
+            </li>
+
+            <li>
+              Carros guardados, favoritos e
+              preferências da conta.
+            </li>
+
+          </ul>
+
+
+          <p className="delete-retention">
+
+            Alguns registos podem ser retidos por período
+            limitado quando exigido por lei, por exemplo
+            para fins fiscais ou de segurança.
+
+            Para mais informação, contacta{" "}
+
+            <a href="mailto:suporte@ndlovutechsolutions.com">
+              suporte@ndlovutechsolutions.com
+            </a>.
+
+          </p>
+
+        </section>
+
       </div>
-    </>
+
+    </main>
   );
 }
