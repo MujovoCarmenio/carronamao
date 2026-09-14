@@ -1,7 +1,6 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
-// @ts-expect-error Next.js handles this global stylesheet import at build time.
 import "./eliminar-conta.css";
 
 type Step = 1 | 2 | 3;
