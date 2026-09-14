@@ -1,4 +1,4 @@
-// app/carronamao/eliminar-conta/page.tsx
+// app/eliminar-conta/page.tsx
 "use client";
 
 import { useRef, useState } from "react";
@@ -39,7 +39,7 @@ export default function DeleteAccountPage() {
 
       setStep("otp");
     } catch (err) {
-      setError("Não foi possível enviar o código. Tenta novamente.");
+      setError(`Não foi possível enviar o código. Tenta novamente. ${err instanceof Error ? err.message : ""}`);
     } finally {
       setLoading(false);
     }
@@ -77,7 +77,7 @@ export default function DeleteAccountPage() {
 
     setLoading(true);
     try {
-      const res = await fetch("/carronamao/api/account-deletion/confirm", {
+      const res = await fetch("/api/account-deletion/confirm", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email.trim().toLowerCase(), code: fullCode }),

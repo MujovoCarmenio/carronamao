@@ -7,7 +7,7 @@ a eliminação da conta **sem precisar de ter a app instalada**.
 
 ## Ficheiros e onde colocá-los
 
-Tudo isto entra no teu projeto `ndlovu-api` já existente:
+Tudo isto entra no teu projeto `carronamao-api` já existente:
 
 ```
 ndlovu-api/
