@@ -29,7 +29,7 @@ export default function DeleteAccountPage() {
 
     setLoading(true);
     try {
-      const res = await fetch("/carronamao/api/account-deletion/request", {
+      const res = await fetch("/api/account-deletion/request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email.trim().toLowerCase() }),
