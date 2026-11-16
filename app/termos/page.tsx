@@ -47,10 +47,11 @@ export default function TermosCarroNaMao() {
         }
 
         .cnm-page .logo-badge {
-          width: 40px; height: 40px;
+          width: 38px; height: 38px;
           border-radius: 11px;
-          overflow: hidden;
+          background: linear-gradient(135deg, var(--accent), #0d3fa8);
           display: flex; align-items: center; justify-content: center;
+          font-size: 18px;
           flex-shrink: 0;
         }
 
